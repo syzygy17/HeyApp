@@ -1,21 +1,21 @@
 package com.github.portfolio.heyapp.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.github.portfolio.heyapp.Activities.ProfileActivity;
 import com.github.portfolio.heyapp.POJOs.Contacts;
 import com.github.portfolio.heyapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -113,6 +113,13 @@ public class ContactsFragment extends Fragment {
                                     } else {
                                         holder.onlineIcon.setVisibility(View.INVISIBLE);
                                     }
+                                    holder.itemView.setOnClickListener(v -> {
+                                        String visitorUserID = getRef(position).getKey();
+                                        Intent intent = new Intent(getContext(),
+                                                ProfileActivity.class);
+                                        intent.putExtra("visitorUserID", visitorUserID);
+                                        startActivity(intent);
+                                    });
                                 }
                             }
 

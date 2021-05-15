@@ -1,7 +1,6 @@
 package com.github.portfolio.heyapp.Fragments;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +18,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.portfolio.heyapp.POJOs.Contacts;
 import com.github.portfolio.heyapp.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,7 +39,7 @@ public class RequestsFragment extends Fragment {
 
     // Firebase
     private DatabaseReference chatRequestsReference, usersReference, getRequestTypeReference,
-    contactsReference;
+            contactsReference;
     private FirebaseAuth firebaseAuth;
 
     public RequestsFragment() {
@@ -78,8 +75,8 @@ public class RequestsFragment extends Fragment {
 
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                .setQuery(chatRequestsReference.child(currentUserID), Contacts.class)
-                .build();
+                        .setQuery(chatRequestsReference.child(currentUserID), Contacts.class)
+                        .build();
 
         FirebaseRecyclerAdapter<Contacts, RequestsViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Contacts, RequestsViewHolder>(options) {
@@ -100,104 +97,13 @@ public class RequestsFragment extends Fragment {
                                     if (requestType.equals("received")) {
                                         usersReference.child(userID)
                                                 .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                String profileName = snapshot.child("name")
-                                                        .getValue().toString();
-                                                /*String profileStatus = snapshot.child("status")
-                                                        .getValue().toString();*/
-
-                                                holder.username.setText(profileName);
-                                                holder.userStatus.setText("Wants to contact you");
-
-                                                if (snapshot.hasChild("image")) {
-                                                    String userImage = snapshot.child("image")
-                                                            .getValue().toString();
-                                                    Picasso.get().load(userImage)
-                                                            .placeholder(R.drawable.profile_image)
-                                                            .into(holder.profileImage);
-                                                } else {
-                                                    holder.profileImage
-                                                            .setImageResource
-                                                                    (R.drawable.profile_image);
-                                                }
-
-                                                holder.username
-                                                        .setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                showAlertDialog(profileName, userID);
-                                                            }
-                                                        });
-                                                holder.userStatus
-                                                        .setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                showAlertDialog(profileName, userID);
-                                                            }
-                                                        });
-                                                holder.profileImage
-                                                        .setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                showAlertDialog(profileName, userID);
-                                                            }
-                                                        });
-
-                                                holder.acceptButton
-                                                        .setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                contactsReference
-                                                                        .child(currentUserID).child(userID)
-                                                                        .child("Contact").setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                        if (task.isSuccessful()) {
-                                                                            contactsReference
-                                                                                    .child(userID).child(currentUserID)
-                                                                                    .child("Contact").setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                @Override
-                                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                                    if (task.isSuccessful()) {
-                                                                                        deleteUserRequest(userID, "accept");
-                                                                                    }
-                                                                                }
-                                                                            });
-                                                                        }
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-                                                holder.cancelButton.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        deleteUserRequest(userID, "decline");
-                                                    }
-                                                });
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    } else if (requestType.equals("sent")) {
-                                        Button requestSentButton = holder.itemView.findViewById(R.id.accept_request_button);
-                                        requestSentButton.setText("Request has been sent");
-
-                                        holder.itemView.findViewById(R.id.cancel_request_button)
-                                                .setVisibility(View.INVISIBLE);
-
-                                        usersReference.child(userID)
-                                                .addValueEventListener(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                         String profileName = snapshot.child("name")
                                                                 .getValue().toString();
 
                                                         holder.username.setText(profileName);
-                                                        holder.userStatus.setText("You sent a request to " + profileName);
+                                                        holder.userStatus.setText(getString(R.string.wants_contact));
 
                                                         if (snapshot.hasChild("image")) {
                                                             String userImage = snapshot.child("image")
@@ -211,28 +117,81 @@ public class RequestsFragment extends Fragment {
                                                                             (R.drawable.profile_image);
                                                         }
 
-                                                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                CharSequence[] options =
-                                                                        new CharSequence[] {
-                                                                                "Cancel chat request"
-                                                                        };
-                                                                AlertDialog.Builder builder =
-                                                                        new AlertDialog.Builder(getContext());
-                                                                builder.setTitle("Already sent request");
-                                                                builder.setItems(options, new DialogInterface.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(DialogInterface dialog, int which) {
-                                                                        if (which == 0) {
-                                                                            deleteUserRequest(userID, "cancel");
-                                                                        }
-                                                                    }
-                                                                });
-                                                                builder.show();
-                                                            }
+                                                        holder.username
+                                                                .setOnClickListener(v -> showAlertDialog(profileName, userID));
+                                                        holder.userStatus
+                                                                .setOnClickListener(v -> showAlertDialog(profileName, userID));
+                                                        holder.profileImage
+                                                                .setOnClickListener(v -> showAlertDialog(profileName, userID));
+
+                                                        holder.acceptButton
+                                                                .setOnClickListener(v -> contactsReference
+                                                                        .child(currentUserID).child(userID)
+                                                                        .child("Contact").setValue("Saved").addOnCompleteListener(task -> {
+                                                                            if (task.isSuccessful()) {
+                                                                                contactsReference
+                                                                                        .child(userID).child(currentUserID)
+                                                                                        .child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
+                                                                                    if (task1.isSuccessful()) {
+                                                                                        deleteUserRequest(userID, "accept");
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        }));
+                                                        holder.cancelButton.setOnClickListener(v -> deleteUserRequest(userID, "decline"));
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
+                                    } else if (requestType.equals("sent")) {
+                                        Button requestSentButton = holder.itemView.findViewById(R.id.accept_request_button);
+                                        requestSentButton.setText(getString(R.string.request_sent));
+
+                                        holder.itemView.findViewById(R.id.cancel_request_button)
+                                                .setVisibility(View.INVISIBLE);
+
+                                        usersReference.child(userID)
+                                                .addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        String profileName = snapshot.child("name")
+                                                                .getValue().toString();
+
+                                                        holder.username.setText(profileName);
+                                                        holder.userStatus.setText(getString(R.string.you_sent_request) + profileName);
+
+                                                        if (snapshot.hasChild("image")) {
+                                                            String userImage = snapshot.child("image")
+                                                                    .getValue().toString();
+                                                            Picasso.get().load(userImage)
+                                                                    .placeholder(R.drawable.profile_image)
+                                                                    .into(holder.profileImage);
+                                                        } else {
+                                                            holder.profileImage
+                                                                    .setImageResource
+                                                                            (R.drawable.profile_image);
+                                                        }
+
+                                                        holder.itemView.setOnClickListener(v -> {
+                                                            CharSequence[] options1 =
+                                                                    new CharSequence[]{
+                                                                            getString(R.string.cancel_chat_request)
+                                                                    };
+                                                            AlertDialog.Builder builder =
+                                                                    new AlertDialog.Builder(getContext());
+                                                            builder.setTitle(getString(R.string.cancel_request_question));
+                                                            builder.setItems(options1, (dialog, which) -> {
+                                                                if (which == 0) {
+                                                                    deleteUserRequest(userID, "cancel");
+                                                                }
+                                                            });
+                                                            builder.show();
                                                         });
                                                     }
+
                                                     @Override
                                                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -268,6 +227,7 @@ public class RequestsFragment extends Fragment {
         TextView username, userStatus;
         CircleImageView profileImage;
         Button acceptButton, cancelButton;
+
         public RequestsViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.user_profile_name);
@@ -280,40 +240,31 @@ public class RequestsFragment extends Fragment {
 
     private void showAlertDialog(String profileName, String userID) {
         CharSequence[] options =
-                new CharSequence[] {
-                        "Accept",
-                        "Cancel"
+                new CharSequence[]{
+                        getString(R.string.accept),
+                        getString(R.string.cancel)
                 };
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getContext());
-        builder.setTitle(profileName + " chat request");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    contactsReference
-                            .child(currentUserID).child(userID)
-                            .child("Contact").setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                contactsReference
-                                        .child(userID).child(currentUserID)
-                                        .child("Contact").setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            deleteUserRequest(userID, "accept");
-                                        }
-                                    }
-                                });
+        builder.setTitle(profileName + getString(R.string.chat_request));
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                contactsReference
+                        .child(currentUserID).child(userID)
+                        .child("Contact").setValue("Saved").addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        contactsReference
+                                .child(userID).child(currentUserID)
+                                .child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                deleteUserRequest(userID, "accept");
                             }
-                        }
-                    });
-                }
-                if (which == 1) {
-                    deleteUserRequest(userID, "decline");
-                }
+                        });
+                    }
+                });
+            }
+            if (which == 1) {
+                deleteUserRequest(userID, "decline");
             }
         });
         builder.show();
@@ -322,30 +273,28 @@ public class RequestsFragment extends Fragment {
     private void deleteUserRequest(String userID, String command) {
         chatRequestsReference.child(currentUserID).child(userID)
                 .removeValue()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            chatRequestsReference.child(userID).child(currentUserID)
-                                    .removeValue()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                if (command.equals("decline")) {
-                                                    Toast.makeText(getContext(),
-                                                            "The contact was successfully declined!", Toast.LENGTH_SHORT).show();
-                                                } else if (command.equals("accept")) {
-                                                    Toast.makeText(getContext(),
-                                                            "The contact has been successfully added and saved!", Toast.LENGTH_SHORT).show();
-                                                } else if (command.equals("cancel")) {
-                                                    Toast.makeText(getContext(),
-                                                            "Chat request was canceled successfully!", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        chatRequestsReference.child(userID).child(currentUserID)
+                                .removeValue()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        switch (command) {
+                                            case "decline":
+                                                Toast.makeText(getContext(),
+                                                        getString(R.string.chat_request_rejected), Toast.LENGTH_SHORT).show();
+                                                break;
+                                            case "accept":
+                                                Toast.makeText(getContext(),
+                                                        getString(R.string.contact_added_saved), Toast.LENGTH_SHORT).show();
+                                                break;
+                                            case "cancel":
+                                                Toast.makeText(getContext(),
+                                                        getString(R.string.chat_request_canceled), Toast.LENGTH_SHORT).show();
+                                                break;
                                         }
-                                    });
-                        }
+                                    }
+                                });
                     }
                 });
     }

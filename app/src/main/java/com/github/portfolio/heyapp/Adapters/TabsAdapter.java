@@ -1,20 +1,26 @@
 package com.github.portfolio.heyapp.Adapters;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.github.portfolio.heyapp.App;
 import com.github.portfolio.heyapp.Fragments.ChatsFragment;
 import com.github.portfolio.heyapp.Fragments.ContactsFragment;
 import com.github.portfolio.heyapp.Fragments.RequestsFragment;
+import com.github.portfolio.heyapp.R;
 
 public class TabsAdapter extends FragmentPagerAdapter {
 
-    private final String CHATS_TITLE = "Chats";
-    private final String CONTACTS_TITLE = "Contacts";
-    private final String REQUESTS_TITLE = "Requests";
+    private Context context = App.getContext();
+
+    private final String CHATS_TITLE = context.getResources().getString(R.string.chats_title);
+    private final String CONTACTS_TITLE = context.getResources().getString(R.string.contacts_title);
+    private final String REQUESTS_TITLE = context.getResources().getString(R.string.requests_title);
 
     public TabsAdapter(@NonNull FragmentManager fm) {
         super(fm);

@@ -2,16 +2,15 @@ package com.github.portfolio.heyapp.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -25,10 +24,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -102,12 +97,14 @@ public class ChatsFragment extends Fragment {
                                         String time = snapshot.child("userState")
                                                 .child("time").getValue().toString();
                                         if (state.equals("online")) {
-                                            holder.userStatus.setText("online");
+                                            holder.userStatus.setText(getString(R.string.state_online));
                                         } else {
-                                            holder.userStatus.setText("Last seen: " + date + " " + time);
+                                            holder.userStatus.setText(
+                                                    getString(R.string.last_seen) +
+                                                            date + " " + time);
                                         }
                                     } else {
-                                        holder.userStatus.setText("offline");
+                                        holder.userStatus.setText(getString(R.string.state_offline));
                                     }
 
 
